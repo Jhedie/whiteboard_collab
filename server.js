@@ -4,49 +4,56 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const { v1: uuidv1 } = require("uuid");
 const PORT = process.env.PORT || 3000;
+require('dotenv').config();
 app.use(express.static(__dirname + "/public"));
 app.get("/board/*", (req, res, next) => {
   res.sendFile(__dirname + "/public/board.html");
 });
 
-const Redis = require("ioredis");
-const REDIS_PREFIX = process.env.REDIS_PREFIX || "whiteboard-";
-const REDIS_TTL_SEC = process.env.REDIS_TTL_SEC || 30 * 24 * 60 * 60; // default: 30 days
-const { REDIS_URL } = process.env;
-let redis;
-if (REDIS_URL) {
-  console.log(
-    `connect to ${REDIS_URL}. prefix=${REDIS_PREFIX} ttl=${REDIS_TTL_SEC}`
-  );
-  redis = new Redis(REDIS_URL);
-}
+const AWStest = require('aws-sdk');
+
+// Configure AWS with credentials from environment variables
+AWStest.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+});
+
+const dynamoDB = new AWStest.DynamoDB.DocumentClient();
+const tableName = 'cloudMessagesV2';
 
 const boards = {};
 
-const saveLimitter = {};
 async function saveBoard(boardId) {
-  if (!redis || saveLimitter[boardId]) return;
+  if (!boardId || !boards[boardId]) return;
 
-  saveLimitter[boardId] = setTimeout(() => {
-    redis.set(
-      REDIS_PREFIX + "board-" + boardId,
-      JSON.stringify(boards[boardId]),
-      "ex",
-      REDIS_TTL_SEC
-    );
-    delete saveLimitter[boardId];
-    console.log("saveBoard", { boardId });
-  }, 3000);
-}
-async function load() {
-  if (redis) {
-    const prefix = REDIS_PREFIX + "board-";
-    const keys = await redis.keys(prefix + "*");
-    for (const key of keys) {
-      const boardId = key.replace(prefix, "");
-      boards[boardId] = JSON.parse(await redis.get(key));
-      console.log("load", { boardId });
+  const params = {
+    TableName: tableName,
+    Item: {
+      boardId: boardId,
+      data: JSON.stringify(boards[boardId])
     }
+  };
+
+  await dynamoDB.put(params).promise();
+  console.log('saveBoard', { boardId });
+}
+
+async function load() {
+  const params = {
+    TableName: tableName
+  };
+
+  try {
+    const data = await dynamoDB.scan(params).promise();
+    data.Items.forEach(item => {
+      const boardId = item.boardId;
+      const boardData = JSON.parse(item.data);
+      boards[boardId] = boardData;
+      console.log('load', { boardId });
+    });
+  } catch (err) {
+    console.error('Error loading data from DynamoDB:', err);
   }
 }
 load();
