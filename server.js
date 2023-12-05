@@ -1,29 +1,53 @@
 const express = require("express");
 const app = express();
+const axios = require("axios");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const { v1: uuidv1 } = require("uuid");
 const PORT = process.env.PORT || 3000;
-require('dotenv').config();
+require("dotenv").config();
 app.use(express.static(__dirname + "/public"));
 app.get("/board/*", (req, res, next) => {
   res.sendFile(__dirname + "/public/board.html");
 });
 
-const AWStest = require('aws-sdk');
+// const AWStest = require("aws-sdk");
 
-// Configure AWS with credentials from environment variables
-AWStest.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
-});
+// // Configure AWS with credentials from environment variables
+// AWStest.config.update({
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION,
+// });
 
-const dynamoDB = new AWStest.DynamoDB.DocumentClient();
-const tableName = 'cloudMessagesV2';
+// const AWS = require("aws-sdk");
+
+// // Configure AWS with credentials from environment variables
+// AWS.config.update({
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION,
+// });
+
+// const dynamoDB = new AWStest.DynamoDB.DocumentClient();
+const tableName = "cloudMessagesV2";
 
 const boards = {};
 
+// async function saveBoard(boardId) {
+//   if (!boardId || !boards[boardId]) return;
+
+//   const params = {
+//     TableName: tableName,
+//     Item: {
+//       boardId: boardId,
+//       data: JSON.stringify(boards[boardId]),
+//     },
+//   };
+
+//   await dynamoDB.put(params).promise();
+//   console.log("saveBoard", { boardId });
+// }
 async function saveBoard(boardId) {
   if (!boardId || !boards[boardId]) return;
 
@@ -31,32 +55,97 @@ async function saveBoard(boardId) {
     TableName: tableName,
     Item: {
       boardId: boardId,
-      data: JSON.stringify(boards[boardId])
-    }
-  };
-
-  await dynamoDB.put(params).promise();
-  console.log('saveBoard', { boardId });
-}
-
-async function load() {
-  const params = {
-    TableName: tableName
+      data: JSON.stringify(boards[boardId]),
+    },
   };
 
   try {
-    const data = await dynamoDB.scan(params).promise();
-    data.Items.forEach(item => {
-      const boardId = item.boardId;
-      const boardData = JSON.parse(item.data);
-      boards[boardId] = boardData;
-      console.log('load', { boardId });
-    });
+    console.log("saveBoard", params);
+    await axios.post("http://localhost:3002/saveBoard", params);
+    console.log("saveBoard", { boardId });
   } catch (err) {
-    console.error('Error loading data from DynamoDB:', err);
+    console.error("Error saving board:", err);
+  }
+}
+
+// async function load() {
+//   const params = {
+//     TableName: tableName,
+//   };
+
+//   try {
+//     const data = await dynamoDB.scan(params).promise();
+//     data.Items.forEach((item) => {
+//       const boardId = item.boardId;
+//       const boardData = JSON.parse(item.data);
+//       boards[boardId] = boardData;
+//       console.log("load", { boardId });
+//     });
+//   } catch (err) {
+//     console.error("Error loading data from DynamoDB:", err);
+//   }
+// }
+// load();
+
+async function load() {
+  console.log("load");
+  try {
+    const response = await axios.get("http://localhost:3002/load");
+    const data = response.data;
+    console.log("load", { data });
+    // data.Items.forEach((item) => {
+    //   const boardId = item.boardId;
+    //   const boardData = JSON.parse(item.data);
+    //   boards[boardId] = boardData;
+    //   console.log("load", { boardId });
+    // });
+  } catch (err) {
+    console.error("Error loading data:", err);
   }
 }
 load();
+
+// async function load() {
+//   const params = {
+//     TableName: tableName,
+//   };
+
+//   try {
+//     const data = await dynamoDB.scan(params).promise();
+//     data.Items.forEach((item) => {
+//       const boardId = item.boardId;
+//       const boardData = JSON.parse(item.data);
+//       boards[boardId] = boardData;
+//       console.log("load", { boardId });
+//     });
+//   } catch (err) {
+//     console.error("Error loading data from DynamoDB:", err);
+//   }
+// }
+// load();
+
+// const redis = require("redis");
+// const client = redis.createClient({
+//   host: "your-elasticache-endpoint",
+//   port: 6379,
+// });
+
+// async function load() {
+//   client.get("boardData", function (err, reply) {
+//     if (err) {
+//       console.error("Error loading data from ElastiCache:", err);
+//     } else {
+//       const data = JSON.parse(reply);
+//       data.Items.forEach((item) => {
+//         const boardId = item.boardId;
+//         const boardData = JSON.parse(item.data);
+//         boards[boardId] = boardData;
+//         console.log("load", { boardId });
+//       });
+//     }
+//   });
+// }
+// load();
 
 // function for dynamic sorting
 function compareValues(key, order = "asc") {
