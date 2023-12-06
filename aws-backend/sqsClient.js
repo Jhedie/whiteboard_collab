@@ -26,24 +26,22 @@ const sendMessageToQueue = async (boardState) => {
   }
 };
 
-const PollMessages = async() => {
-  try {
-    const command = new ReceiveMessageCommand({
-      MaxNumberOfMessages: 10,
-      QueueUrl: queueUrl,
-      WaitTimeSeconds: 5,
-      MessageAttributes: ["All"],
-    });
+// const PollMessages = async() => {
+//   try {
+//     const command = new ReceiveMessageCommand({
+//       MaxNumberOfMessages: 10,
+//       QueueUrl: queueUrl,
+//       WaitTimeSeconds: 5,
+//       MessageAttributes: ["All"],
+//     });
 
-    const result = await sqsClient.send(command);
-    console.log(result.Messages);
-  } catch (error) {
-    console.log(error);
-  }
-};
+//     const result = await sqsClient.send(command);
+//     console.log(result.Messages);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-PollMessages();
-
-
+// PollMessages();
 
 module.exports = { sendMessageToQueue };

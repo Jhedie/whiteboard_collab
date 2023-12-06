@@ -1,5 +1,7 @@
 const express = require("express");
 const { sendMessageToQueue } = require("./sqsClient");
+const { getMessageFromRedis, storeMessageInRedis } = require("./redisService");
+
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -7,9 +9,10 @@ const app = express();
 app.use(bodyParser.json());
 
 app.get("/load", (req, res) => {
-  //print out contents of the data from req
-  console.log(req.params);
-  res.send("Hello from Express!");
+  storeMessageInRedis("boardState", { boardState: "test" });
+  // getting board state from redis
+  // boardStateFromRedis = getMessageFromRedis();
+  res.send(boardStateFromRedis);
 });
 
 app.post("/update-whiteboard", async (req, res) => {

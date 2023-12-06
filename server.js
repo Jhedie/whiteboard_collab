@@ -93,12 +93,12 @@ async function load() {
     const response = await axios.get("http://localhost:3002/load");
     const data = response.data;
     console.log("load", { data });
-    // data.Items.forEach((item) => {
-    //   const boardId = item.boardId;
-    //   const boardData = JSON.parse(item.data);
-    //   boards[boardId] = boardData;
-    //   console.log("load", { boardId });
-    // });
+    data.Items.forEach((item) => {
+      const boardId = item.boardId;
+      const boardData = JSON.parse(item.data);
+      boards[boardId] = boardData;
+      console.log("load", { boardId });
+    });
   } catch (err) {
     console.error("Error loading data:", err);
   }

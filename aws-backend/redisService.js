@@ -1,10 +1,11 @@
 const Redis = require("ioredis");
-const redisConfig = require("./config/redisConfig"); // Assuming you have a config file for Redis
-
+const redisConfig = require("./redisConfig");
+const host = "whiteboardcache-q7d88o.serverless.use1.cache.amazonaws.com";
+const port = 6379;
 // Initialize Redis client
-const redis = new Redis(redisConfig);
+const redisClient = new Redis({ host, port });
 
-const storeMessage = async (key, message) => {
+const storeMessageInRedis = async (key, message) => {
   try {
     await redis.set(key, JSON.stringify(message));
     console.log(`Message stored in Redis with key: ${key}`);
@@ -14,7 +15,8 @@ const storeMessage = async (key, message) => {
   }
 };
 
-const getMessage = async (key) => {
+//this is the function that gets the message from redis
+const getMessageFromRedis = async (key) => {
   try {
     const message = await redis.get(key);
     return message ? JSON.parse(message) : null;
@@ -24,4 +26,4 @@ const getMessage = async (key) => {
   }
 };
 
-module.exports = { storeMessage, getMessage };
+module.exports = { storeMessageInRedis, getMessageFromRedis };
