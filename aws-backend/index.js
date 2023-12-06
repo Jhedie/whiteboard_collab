@@ -1,6 +1,6 @@
 const express = require("express");
 const { sendMessageToQueue } = require("./sqsClient");
-const { getMessageFromRedis, storeMessageInRedis } = require("./redisService");
+const { storeMessageInRedis } = require("./redisService");
 
 const bodyParser = require("body-parser");
 
@@ -16,18 +16,19 @@ app.get("/load", (req, res) => {
 });
 
 app.post("/update-whiteboard", async (req, res) => {
-  const whiteboardData = req.body; // Assume this contains whiteboard state
-  await sendMessageToSQS(whiteboardData); // Function defined earlier
-  res.send("Update sent to SQS");
+  // const whiteboardData = req.body; // Assume this contains whiteboard state
+  // await sendMessageToSQS(whiteboardData); // Function defined earlier
+  // res.send("Update sent to SQS");
 });
 
 app.post("/saveBoard", async (req, res) => {
-  const whiteboardData = req.body; // Assume this contains whiteboard state
-  console.log("Incoming saveBoard", whiteboardData);
-
-  await sendMessageToQueue(whiteboardData);
-  // Function defined earlier
-  res.send("Update saved to DynamoDB");
+  // const whiteboardData = req.body; // Assume this contains whiteboard state
+  // console.log("Incoming saveBoard", whiteboardData);
+  console.log("Incoming saveBoard");
+  storeMessageInRedis();
+  // await sendMessageToQueue(whiteboardData);
+  // // Function defined earlier
+  // res.send("Update saved to DynamoDB");
 });
 const port = 3002;
 app.listen(port, () => console.log(`Server running on port ${port}`));
