@@ -13,7 +13,7 @@ const sendMessageToQueue = async (boardState) => {
     const command = new SendMessageCommand({
       MessageBody: JSON.stringify(boardState),
       QueueUrl: queueUrl,
-      MessageGroupId: "messageDefaultGroup", // Add this line
+      MessageGroupId: "defaultMessageGroup", // Add this line
       MessageDeduplicationId: Math.random().toString(36).substring(2, 15), // Add this line
       MessageAttributes: {
         OrderdID: { DataType: "String", StringValue: "4421x" },
@@ -26,14 +26,24 @@ const sendMessageToQueue = async (boardState) => {
   }
 };
 
-// Set the region
-//AWS.config.update({ region: "us-east-1" });
+const PollMessages = async() => {
+  try {
+    const command = new ReceiveMessageCommand({
+      MaxNumberOfMessages: 10,
+      QueueUrl: queueUrl,
+      WaitTimeSeconds: 5,
+      MessageAttributes: ["All"],
+    });
 
-exports.handler = async (event) => {
-  const boardState = JSON.parse(event.body);
-  await sendMessageToQueue(boardState);
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: "Message sent to SQS" }),
-  };
+    const result = await sqsClient.send(command);
+    console.log(result.Messages);
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+PollMessages();
+
+
+
+module.exports = { sendMessageToQueue };
