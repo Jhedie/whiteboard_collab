@@ -1,9 +1,15 @@
 const express = require("express");
 const { saveBoard } = require("./etcdService");
+const cors = require("cors");
 
 const bodyParser = require("body-parser");
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://Frontend:3000",
+  })
+); // Add this line
 // parse the json object
 app.use(bodyParser.json());
 

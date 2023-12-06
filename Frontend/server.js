@@ -61,7 +61,7 @@ async function saveBoard(boardId) {
 
   try {
     console.log("saveBoard", params);
-    await axios.post("http://localhost:3002/saveBoard", params);
+    await axios.post("http://Backend:3002/saveBoard", params);
     console.log("saveBoard", { boardId });
   } catch (err) {
     console.error("Error saving board:", err);
