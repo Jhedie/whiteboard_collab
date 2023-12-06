@@ -1,5 +1,5 @@
 const express = require("express");
-const { sendBoardStateToSQS } = require("./sqsClient");
+const { sendMessageToQueue } = require("./sqsClient");
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -22,7 +22,9 @@ app.post("/saveBoard", async (req, res) => {
   const whiteboardData = req.body; // Assume this contains whiteboard state
   console.log("saveBoard", whiteboardData);
   // save whiteboard state in sqs
-  await sendBoardStateToSQS(whiteboardData); // Function defined earlier
+  // await sendBoardStateToSQS("whiteboardData"); 
+  await sendMessageToQueue("objecqwgt"); // Function defined earlier
+  // Function defined earlier
   res.send("Update saved to DynamoDB");
 });
 const port = 3002;
