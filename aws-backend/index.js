@@ -20,10 +20,9 @@ app.post("/update-whiteboard", async (req, res) => {
 
 app.post("/saveBoard", async (req, res) => {
   const whiteboardData = req.body; // Assume this contains whiteboard state
-  console.log("saveBoard", whiteboardData);
-  // save whiteboard state in sqs
-  // await sendBoardStateToSQS("whiteboardData"); 
-  await sendMessageToQueue("objecqwgt"); // Function defined earlier
+  console.log("Incoming saveBoard", whiteboardData);
+
+  await sendMessageToQueue(whiteboardData);
   // Function defined earlier
   res.send("Update saved to DynamoDB");
 });
