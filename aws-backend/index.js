@@ -1,6 +1,5 @@
 const express = require("express");
-const { sendMessageToQueue } = require("./sqsClient");
-const { getCachedDataByKey } = require("./redisService");
+const { saveBoard } = require("./etcdService");
 
 const bodyParser = require("body-parser");
 
@@ -9,26 +8,12 @@ const app = express();
 app.use(bodyParser.json());
 
 app.get("/load", (req, res) => {
-  storeMessageInRedis("boardState", { boardState: "test" });
-  // getting board state from redis
-  // boardStateFromRedis = getMessageFromRedis();
-  res.send(boardStateFromRedis);
-});
-
-app.post("/update-whiteboard", async (req, res) => {
-  // const whiteboardData = req.body; // Assume this contains whiteboard state
-  // await sendMessageToSQS(whiteboardData); // Function defined earlier
-  // res.send("Update sent to SQS");
+  console.log("Incoming load");
 });
 
 app.post("/saveBoard", async (req, res) => {
-  // const whiteboardData = req.body; // Assume this contains whiteboard state
-  // console.log("Incoming saveBoard", whiteboardData);
   console.log("Incoming saveBoard");
-  getCachedDataByKey();
-  // await sendMessageToQueue(whiteboardData);
-  // // Function defined earlier
-  // res.send("Update saved to DynamoDB");
+  saveBoard();
 });
 const port = 3002;
 app.listen(port, () => console.log(`Server running on port ${port}`));

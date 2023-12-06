@@ -87,23 +87,23 @@ async function saveBoard(boardId) {
 // }
 // load();
 
-async function load() {
-  console.log("load");
-  try {
-    const response = await axios.get("http://localhost:3002/load");
-    const data = response.data;
-    console.log("load", { data });
-    data.Items.forEach((item) => {
-      const boardId = item.boardId;
-      const boardData = JSON.parse(item.data);
-      boards[boardId] = boardData;
-      console.log("load", { boardId });
-    });
-  } catch (err) {
-    console.error("Error loading data:", err);
-  }
-}
-load();
+// async function load() {
+//   console.log("load");
+//   try {
+//     const response = await axios.get("http://localhost:3002/load");
+//     const data = response.data;
+//     console.log("load", { data });
+//     data.Items.forEach((item) => {
+//       const boardId = item.boardId;
+//       const boardData = JSON.parse(item.data);
+//       boards[boardId] = boardData;
+//       console.log("load", { boardId });
+//     });
+//   } catch (err) {
+//     console.error("Error loading data:", err);
+//   }
+// }
+// load();
 
 // async function load() {
 //   const params = {
