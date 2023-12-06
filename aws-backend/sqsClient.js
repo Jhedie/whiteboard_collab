@@ -7,16 +7,13 @@ const sqsClient = new SQSClient(configObject);
 // URL of the queue
 const queueUrl =
   "https://sqs.us-east-1.amazonaws.com/274813639254/WhiteboardMessagingQueue.fifo";
-const boards = {};
 
 const sendMessageToQueue = async (boardState) => {
   try {
-    if (!boardState || !boards[boardState]) return;
-
     const command = new SendMessageCommand({
       MessageBody: JSON.stringify(boardState),
       QueueUrl: queueUrl,
-      MessageGroupId: "messageGroup2", // Add this line
+      MessageGroupId: "messageGroup3", // Add this line
       MessageDeduplicationId: Math.random().toString(36).substring(2, 15), // Add this line
       MessageAttributes: {
         OrderdID: { DataType: "String", StringValue: "4421x" },
