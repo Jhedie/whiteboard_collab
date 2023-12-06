@@ -1,6 +1,6 @@
 const express = require("express");
 const { sendMessageToQueue } = require("./sqsClient");
-const { storeMessageInRedis } = require("./redisService");
+const { getCachedDataByKey } = require("./redisService");
 
 const bodyParser = require("body-parser");
 
@@ -25,7 +25,7 @@ app.post("/saveBoard", async (req, res) => {
   // const whiteboardData = req.body; // Assume this contains whiteboard state
   // console.log("Incoming saveBoard", whiteboardData);
   console.log("Incoming saveBoard");
-  storeMessageInRedis();
+  getCachedDataByKey();
   // await sendMessageToQueue(whiteboardData);
   // // Function defined earlier
   // res.send("Update saved to DynamoDB");
