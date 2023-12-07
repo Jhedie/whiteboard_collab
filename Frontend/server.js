@@ -46,6 +46,9 @@ const tableName = "cloudMessagesV2";
 //   await dynamoDB.put(params).promise();
 //   console.log("saveBoard", { boardId });
 // }
+
+const boards = {};
+
 async function saveBoard(boardId) {
   if (!boardId || !boards[boardId]) return;
 
@@ -85,9 +88,6 @@ async function load() {
   }
 }
 load();
-
-
-
 
 // async function load() {
 //   const params = {
