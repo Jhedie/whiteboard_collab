@@ -32,8 +32,6 @@ app.get("/board/*", (req, res, next) => {
 // const dynamoDB = new AWStest.DynamoDB.DocumentClient();
 const tableName = "cloudMessagesV2";
 
-const boards = {};
-
 // async function saveBoard(boardId) {
 //   if (!boardId || !boards[boardId]) return;
 
@@ -68,42 +66,28 @@ async function saveBoard(boardId) {
   }
 }
 
-// async function load() {
-//   const params = {
-//     TableName: tableName,
-//   };
+async function load() {
+  console.log("load");
 
-//   try {
-//     const data = await dynamoDB.scan(params).promise();
-//     data.Items.forEach((item) => {
-//       const boardId = item.boardId;
-//       const boardData = JSON.parse(item.data);
-//       boards[boardId] = boardData;
-//       console.log("load", { boardId });
-//     });
-//   } catch (err) {
-//     console.error("Error loading data from DynamoDB:", err);
-//   }
-// }
-// load();
+  params = { TableName: tableName };
+  try {
+    const response = await axios.get("http://Backend:3002/load", params);
+    const data = response.data;
+    console.log("loading from aws-backend", { data });
+    data.Items.forEach((item) => {
+      const boardId = item.boardId;
+      const boardData = JSON.parse(item.data);
+      boards[boardId] = boardData;
+      console.log("load", { boardId });
+    });
+  } catch (err) {
+    console.error("Error loading data:", err);
+  }
+}
+load();
 
-// async function load() {
-//   console.log("load");
-//   try {
-//     const response = await axios.get("http://localhost:3002/load");
-//     const data = response.data;
-//     console.log("load", { data });
-//     data.Items.forEach((item) => {
-//       const boardId = item.boardId;
-//       const boardData = JSON.parse(item.data);
-//       boards[boardId] = boardData;
-//       console.log("load", { boardId });
-//     });
-//   } catch (err) {
-//     console.error("Error loading data:", err);
-//   }
-// }
-// load();
+
+
 
 // async function load() {
 //   const params = {
@@ -121,29 +105,6 @@ async function saveBoard(boardId) {
 //   } catch (err) {
 //     console.error("Error loading data from DynamoDB:", err);
 //   }
-// }
-// load();
-
-// const redis = require("redis");
-// const client = redis.createClient({
-//   host: "your-elasticache-endpoint",
-//   port: 6379,
-// });
-
-// async function load() {
-//   client.get("boardData", function (err, reply) {
-//     if (err) {
-//       console.error("Error loading data from ElastiCache:", err);
-//     } else {
-//       const data = JSON.parse(reply);
-//       data.Items.forEach((item) => {
-//         const boardId = item.boardId;
-//         const boardData = JSON.parse(item.data);
-//         boards[boardId] = boardData;
-//         console.log("load", { boardId });
-//       });
-//     }
-//   });
 // }
 // load();
 
