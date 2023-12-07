@@ -1,6 +1,6 @@
 ## How to run locally
 
-create a copy of the env.example and/or rename it to `.env` set the values. This is for the dynamodb
+create a copy of the env.example and rename it to `.env` set the values. This is for the dynamodb
 
 ## Backend
 

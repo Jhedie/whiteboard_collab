@@ -3,23 +3,8 @@ const client = new Etcd3({
   hosts: "http://Etcd:2379",
 });
 async function saveBoard(boards, boardId) {
-  console.log("saveBoard to etcd");
-  // await client.put("foo").d("bar");
-
-  // const fooValue = await client.get("foo").string();
-  // console.log("foo was:", fooValue);
-
-  // const allFValues = await client.getAll().prefix("f").keys();
-  // console.log('all our keys starting with "f":', allFValues);
-
-  // await client.delete().all();
-
-  // const allF2Values = await client.getAll().prefix("f").keys();
-  // console.log('all our keys starting with "f":', allF2Values);
-
+  console.log("saving board to etcd");
   await client.put(boardId).value(JSON.stringify(boards[boardId]));
-
-  // console.log("saveBoard", { boardId });
 }
 
 async function load() {
@@ -34,6 +19,16 @@ async function load() {
     console.log("load", { boardId });
   }
   return boards;
+}
+
+async function fetchAllFromEtcd() {
+  const keys = await client.getAll().keys();
+  const data = {};
+  for (const key of keys) {
+    const value = await etcdClient.get(key).string();
+    data[key] = JSON.parse(value);
+  }
+  return data;
 }
 
 module.exports = { saveBoard, load };
