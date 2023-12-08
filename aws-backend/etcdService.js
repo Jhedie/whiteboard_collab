@@ -1,6 +1,6 @@
 const { Etcd3 } = require("etcd3");
 const client = new Etcd3({
-  hosts: "http://Etcd:2379",
+  hosts: "http://etcd:2379",
 });
 async function saveBoard(boards, boardId) {
   console.log("saving board to etcd");

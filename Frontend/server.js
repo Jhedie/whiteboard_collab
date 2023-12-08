@@ -62,7 +62,7 @@ async function saveBoard(boardId) {
 
   try {
     console.log("saveBoard", params);
-    await axios.post("http://Backend:3002/saveBoard", params);
+    await axios.post("http://backendService:3002/saveBoard", params);
     console.log("saveBoard", { boardId });
   } catch (err) {
     console.error("Error saving board:", err);
@@ -74,7 +74,7 @@ async function load() {
 
   params = { TableName: tableName };
   try {
-    const response = await axios.get("http://Backend:3002/load", params);
+    const response = await axios.get("http://backendService:3002/load", params);
     const data = response.data;
     console.log("loading from aws-backend", { data });
     data.Items.forEach((item) => {

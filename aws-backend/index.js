@@ -8,7 +8,7 @@ const boards = {};
 const app = express();
 app.use(
   cors({
-    origin: "http://Frontend:3000",
+    origin: "http://frontendService:3000",
   })
 );
 //
